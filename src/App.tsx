@@ -678,7 +678,7 @@ function AppContent() {
                     <div className="pt-4 border-t border-white/5 flex items-center gap-3">
                       <div className="p-1.5 bg-white rounded-lg">
                         <img 
-                          src={`https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodeURIComponent(window.location.origin + '?page=cadastro')}`} 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(window.location.origin + '?page=cadastro')}`} 
                           alt="QR Code" 
                           referrerPolicy="no-referrer"
                           className="w-16 h-16"
