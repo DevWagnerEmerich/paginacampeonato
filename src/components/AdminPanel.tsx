@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTournament } from '../context/TournamentContext';
 import { GameConfig, Team, Match, ChampionHistory } from '../types';
 import { 
@@ -13,6 +13,19 @@ const renderFlag = (flag: string, className = "w-6 h-6 rounded-md object-contain
     return <img src={flag} alt="logo" className={className} />;
   }
   return <span className="text-lg leading-none select-none">{flag}</span>;
+};
+
+const formatISOToLocalDateTime = (isoString: string) => {
+  if (!isoString) return '';
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return '';
+    const tzOffsetMs = d.getTimezoneOffset() * 60 * 1000;
+    const localTime = new Date(d.getTime() - tzOffsetMs);
+    return localTime.toISOString().substring(0, 16);
+  } catch (e) {
+    return '';
+  }
 };
 
 interface AdminPanelProps {
@@ -35,11 +48,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
   const [title, setTitle] = useState(settings.eventTitle);
   const [edition, setEdition] = useState(settings.edition);
   const [desc, setDesc] = useState(settings.description);
-  const [date, setDate] = useState(settings.countdownDate.substring(0, 16));
+  const [date, setDate] = useState(() => formatISOToLocalDateTime(settings.countdownDate));
   const [stream, setStream] = useState(settings.liveStreamUrl);
-  const [deadline, setDeadline] = useState(settings.registrationDeadline ? settings.registrationDeadline.substring(0, 16) : '');
+  const [deadline, setDeadline] = useState(() => settings.registrationDeadline ? formatISOToLocalDateTime(settings.registrationDeadline) : '');
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  useEffect(() => {
+    setLogo(settings.logo);
+    setSchool(settings.schoolName);
+    setTitle(settings.eventTitle);
+    setEdition(settings.edition);
+    setDesc(settings.description);
+    setDate(formatISOToLocalDateTime(settings.countdownDate));
+    setDeadline(settings.registrationDeadline ? formatISOToLocalDateTime(settings.registrationDeadline) : '');
+    setStream(settings.liveStreamUrl);
+  }, [settings]);
 
   // Calendar configuration states
   const [selectedMatchIds, setSelectedMatchIds] = useState<string[]>([]);
