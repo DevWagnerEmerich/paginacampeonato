@@ -1314,6 +1314,8 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               </button>
             </div>
           </div>
+        </div>
+      )}
       {/* GLOBAL ALERT MODAL */}
       {alertModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
