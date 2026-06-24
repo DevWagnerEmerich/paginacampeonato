@@ -24,7 +24,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
     settings, updateSettings, games, addGame, updateGame, deleteGame,
     teams, updateTeam, deleteTeam, matches, addMatch, updateMatch, deleteMatch,
     suggestions, voteSuggestion, history, addChampionHistory, resetAllData, clearAllData, localWarning,
-    generateGroupsAndMatches
+    generateGroupsAndMatches, alertUser, confirmUser
   } = useTournament();
 
   const [activeTab, setActiveTab] = useState<'config' | 'teams' | 'matches' | 'calendar'>('config');
@@ -109,7 +109,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
       registrationDeadline: deadline ? new Date(deadline).toISOString() : new Date().toISOString(),
     });
     setIsSavingSettings(false);
-    alert('✓ Configurações gerais atualizadas!');
+    alertUser('✓ Configurações gerais atualizadas!', 'success');
   };
 
   // Convert Suggestion to Confirmed Game
@@ -122,7 +122,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
       isConfirmed: true,
       minTeams: 4
     });
-    alert(`✓ ${gameName} foi adicionado à lista de jogos oficiais do campeonato!`);
+    alertUser(`✓ ${gameName} foi adicionado à lista de jogos oficiais do campeonato!`, 'success');
   };
 
   // Team controls
@@ -135,7 +135,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
   };
 
   const handleDeleteTeam = async (id: string, name: string) => {
-    if (confirm(`Excluir permanentemente o time ${name}?`)) {
+    if (await confirmUser(`Excluir permanentemente o time ${name}?`)) {
       await deleteTeam(id);
     }
   };
@@ -168,7 +168,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
       playerStats: pStats.length > 0 ? pStats : undefined
     });
     setEditingMatchId(null);
-    alert('✓ Placar registrado e estatísticas atualizadas!');
+    alertUser('✓ Placar registrado e estatísticas atualizadas!', 'success');
   };
 
   const handleToggleLiveMatch = async (matchId: string, status: boolean) => {
@@ -176,7 +176,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
   };
 
   const handleDeleteMatch = async (matchId: string) => {
-    if (confirm('Excluir este confronto?')) {
+    if (await confirmUser('Excluir este confronto?')) {
       await deleteMatch(matchId);
     }
   };
@@ -195,7 +195,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
     });
     setNewGameName('');
     setIsAddingGame(false);
-    alert('🎮 Novo jogo adicionado!');
+    alertUser('🎮 Novo jogo adicionado!', 'success');
   };
 
   // Add champ history records
@@ -215,7 +215,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
     setHistGameName('');
     setHistChamp('');
     setIsAddingHist(false);
-    alert('🏆 Campeão histórico registrado!');
+    alertUser('🏆 Campeão histórico registrado!', 'success');
   };
 
   return (
@@ -479,7 +479,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
                   key={g.id}
                   onClick={async () => {
                     const modelName = g.bracketStyle === 'round-robin' ? 'a tabela de pontos corridos' : 'a chave de mata-mata';
-                    if (confirm(`Deseja gerar ${modelName} de ${g.name}? Isso limpará confrontos anteriores deste jogo e usará a lista atual de equipes aprovadas.`)) {
+                    if (await confirmUser(`Deseja gerar ${modelName} de ${g.name}? Isso limpará confrontos anteriores deste jogo e usará a lista atual de equipes aprovadas.`)) {
                       await generateGroupsAndMatches(g.id);
                     }
                   }}

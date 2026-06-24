@@ -54,6 +54,8 @@ interface TournamentContextType {
   clearAllData: () => Promise<void>;
   joinTeamByCode: (studentName: string, code: string) => Promise<boolean>;
   generatePlayoffsFromGroups: (gameId: string) => Promise<void>;
+  alertUser: (message: string, type?: 'success' | 'error' | 'info' | 'success-modal') => void;
+  confirmUser: (message: string) => Promise<boolean>;
 }
 
 const TournamentContext = createContext<TournamentContextType | undefined>(undefined);
@@ -93,6 +95,31 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return localStorage.getItem('esports_admin_logged') === 'true';
   });
   const [localWarning, setLocalWarning] = useState<string | null>(null);
+  
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'info' }[]>([]);
+  const [confirmPromise, setConfirmPromise] = useState<{
+    resolve: (val: boolean) => void;
+    message: string;
+  } | null>(null);
+  const [alertModal, setAlertModal] = useState<{ message: string; title?: string } | null>(null);
+
+  const alertUser = (message: string, type: 'success' | 'error' | 'info' | 'success-modal' = 'info') => {
+    if (type === 'success-modal') {
+      setAlertModal({ message, title: 'Cadastro Concluído!' });
+    } else {
+      const id = Math.random().toString(36).substr(2, 9);
+      setToasts(prev => [...prev, { id, message, type }]);
+      setTimeout(() => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+      }, 4000);
+    }
+  };
+
+  const confirmUser = (message: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setConfirmPromise({ resolve, message });
+    });
+  };
 
   // Synchronize Firestore, fallback to Local Storage if block or offline
   useEffect(() => {
@@ -629,7 +656,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const game = games.find(g => g.id === gameId);
     
     if (approvedTeams.length < 2) {
-      alert('São necessários pelo menos 2 times aprovados para realizar o chaveamento!');
+      alertUser('São necessários pelo menos 2 times aprovados para realizar o chaveamento!', 'error');
       return;
     }
 
@@ -984,7 +1011,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const generatePlayoffsFromGroups = async (gameId: string) => {
     const game = games.find(g => g.id === gameId);
     if (!game || game.bracketStyle !== 'groups-and-bracket') {
-      alert('Este jogo não utiliza o formato de grupos + eliminatórias!');
+      alertUser('Este jogo não utiliza o formato de grupos + eliminatórias!', 'error');
       return;
     }
     
@@ -994,7 +1021,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const groupB = gameGroups.find(g => g.name === 'Grupo B');
     
     if (!groupA || !groupB) {
-      alert('Os grupos A e B ainda não foram configurados!');
+      alertUser('Os grupos A e B ainda não foram configurados!', 'error');
       return;
     }
     
@@ -1005,7 +1032,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const incompleteGroupMatches = groupMatches.filter(m => m.score1 === null || m.score2 === null);
     
     if (incompleteGroupMatches.length > 0) {
-      alert('Todas as partidas da fase de grupos devem estar finalizadas para gerar os playoffs!');
+      alertUser('Todas as partidas da fase de grupos devem estar finalizadas para gerar os playoffs!', 'error');
       return;
     }
     
@@ -1013,7 +1040,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const standingsB = calculateStandings(groupB.teamIds, gameMatches);
     
     if (standingsA.length < 2 || standingsB.length < 2) {
-      alert('Cada grupo deve ter pelo menos 2 times cadastrados!');
+      alertUser('Cada grupo deve ter pelo menos 2 times cadastrados!', 'error');
       return;
     }
     
@@ -1080,11 +1107,11 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.error(e);
     }
     
-    alert('✓ Semifinais geradas com sucesso a partir da classificação dos grupos!');
+    alertUser('✓ Semifinais geradas com sucesso a partir da classificação dos grupos!', 'success');
   };
 
   const resetAllData = async () => {
-    if (!confirm('Deseja realmente redefinir todos os dados para o padrão do campeonato?')) return;
+    if (!await confirmUser('Deseja realmente redefinir todos os dados para o padrão do campeonato?')) return;
     
     // Reset state to initial
     setSettings(initialSettings);
@@ -1108,7 +1135,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     // Reset Firebase collections (best-effort)
     try {
-      alert('Dados restaurados localmente! Atualizando banco de dados...');
+      alertUser('Dados restaurados localmente! Atualizando banco de dados...', 'info');
       
       await setDoc(doc(db, 'settings', 'global'), initialSettings);
       
@@ -1128,7 +1155,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const clearAllData = async () => {
-    if (!confirm('ATENÇÃO: Deseja realmente APAGAR TODOS os dados cadastrados? Isso removerá permanentemente todos os jogos, equipes, partidas, chaves e históricos!')) return;
+    if (!await confirmUser('ATENÇÃO: Deseja realmente APAGAR TODOS os dados cadastrados? Isso removerá permanentemente todos os jogos, equipes, partidas, chaves e históricos!')) return;
     
     // Reset state to empty
     setGames([]);
@@ -1150,7 +1177,7 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     // Clear Firebase collections
     try {
-      alert('Dados apagados localmente! Limpando banco de dados no servidor...');
+      alertUser('Dados apagados localmente! Limpando banco de dados no servidor...', 'info');
       
       const collectionsToClear = ['games', 'teams', 'matches', 'groups', 'suggestions', 'notifications', 'history'];
       
@@ -1168,10 +1195,12 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       saveLocalFallback('settings', initialSettings);
       await setDoc(doc(db, 'settings', 'global'), initialSettings);
       
-      alert('✓ Banco de dados limpo com sucesso!');
+      alertUser('✓ Banco de dados limpo com sucesso!', 'success');
+      await new Promise(resolve => setTimeout(resolve, 1500));
       location.reload();
     } catch (e) {
       console.log('Firebase clear error', e);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       location.reload();
     }
   };
@@ -1209,9 +1238,108 @@ export const TournamentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       resetAllData,
       clearAllData,
       joinTeamByCode,
-      generatePlayoffsFromGroups
+      generatePlayoffsFromGroups,
+      alertUser,
+      confirmUser
     }}>
       {children}
+
+      {/* GLOBAL TOAST SYSTEM */}
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full select-none pointer-events-none">
+        {toasts.map(toast => {
+          let borderColor = 'border-amber-500/30';
+          let textColor = 'text-amber-400';
+          let bgColor = 'bg-amber-950/20';
+          let icon = '💡';
+          
+          if (toast.type === 'success') {
+            borderColor = 'border-emerald-500/30';
+            textColor = 'text-emerald-400';
+            bgColor = 'bg-emerald-950/20';
+            icon = '✔';
+          } else if (toast.type === 'error') {
+            borderColor = 'border-rose-500/30';
+            textColor = 'text-rose-400';
+            bgColor = 'bg-rose-950/20';
+            icon = '✘';
+          }
+          
+          return (
+            <div 
+              key={toast.id}
+              className={`pointer-events-auto flex items-center gap-3 p-4 bg-[#0E1016]/95 border ${borderColor} rounded-2xl shadow-xl animate-in slide-in-from-right-4 fade-in duration-200`}
+            >
+              <span className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-sm ${bgColor} ${textColor}`}>
+                {icon}
+              </span>
+              <p className="text-xs font-semibold text-slate-200 leading-snug">{toast.message}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* GLOBAL CONFIRMATION MODAL */}
+      {confirmPromise && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0E1016] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in scale-in duration-200 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-lg font-bold">
+                ⚠️
+              </span>
+              <h3 className="font-display font-black text-lg text-white uppercase tracking-wider">Confirmação</h3>
+            </div>
+            
+            <p className="text-xs text-slate-400 leading-relaxed font-sans">
+              {confirmPromise.message}
+            </p>
+            
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={() => {
+                  confirmPromise.resolve(false);
+                  setConfirmPromise(null);
+                }}
+                className="flex-1 bg-white/[0.02] hover:bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-bold py-2.5 rounded-xl cursor-pointer transition-colors"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={() => {
+                  confirmPromise.resolve(true);
+                  setConfirmPromise(null);
+                }}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold uppercase tracking-wider text-xs py-2.5 rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-colors"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+      {/* GLOBAL ALERT MODAL */}
+      {alertModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-[#0E1016] border border-white/10 rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-in scale-in duration-200 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 text-lg font-bold">
+                ✔
+              </span>
+              <h3 className="font-display font-black text-lg text-white uppercase tracking-wider">{alertModal.title || 'Informativo'}</h3>
+            </div>
+            
+            <div className="text-xs text-slate-400 leading-relaxed font-sans whitespace-pre-line bg-[#0A0B0F] border border-white/5 p-4 rounded-2xl max-h-[220px] overflow-y-auto font-mono select-all text-center">
+              {alertModal.message}
+            </div>
+            
+            <div className="flex pt-2">
+              <button 
+                onClick={() => setAlertModal(null)}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold uppercase tracking-wider text-xs py-2.5 rounded-xl cursor-pointer shadow-lg shadow-indigo-600/15 transition-colors"
+              >
+                Concluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </TournamentContext.Provider>
   );
 };

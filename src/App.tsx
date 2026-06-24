@@ -26,7 +26,8 @@ function AppContent() {
     settings, games, teams, matches, groups, 
     notifications, isAdmin, loginAdmin, logoutAdmin,
     addTeam, addNotification,
-    joinTeamByCode, updateMatch, generateGroupsAndMatches
+    joinTeamByCode, updateMatch, generateGroupsAndMatches,
+    alertUser, confirmUser
   } = useTournament();
   const isRegistrationClosed = true; // Inscrições encerradas de forma definitiva
   
@@ -244,7 +245,7 @@ function AppContent() {
       setCurrentPage('admin');
       setAdminPasswordInput('');
     } else {
-      alert('🔒 Senha Incorreta! Tente "admin123" ou "admin"');
+      alertUser('🔒 Senha Incorreta! Tente "admin123" ou "admin"', 'error');
     }
   };
 
@@ -355,18 +356,18 @@ function AppContent() {
   const handleRegisterTeamSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regGame || !regTeamName || !regContact) {
-      alert('Por favor preencha todos os campos obrigatórios!');
+      alertUser('Por favor preencha todos os campos obrigatórios!', 'error');
       return;
     }
 
     if (!regFlag) {
-      alert('Por favor envie a imagem do logo ou escudo da sua equipe!');
+      alertUser('Por favor envie a imagem do logo ou escudo da sua equipe!', 'error');
       return;
     }
 
     const filteredMembers = regMembers.filter(m => m.trim() !== '');
     if (regType !== 'individual' && filteredMembers.length === 0) {
-      alert('Adicione pelo menos um integrante para a equipe!');
+      alertUser('Adicione pelo menos um integrante para a equipe!', 'error');
       return;
     }
 
@@ -391,7 +392,7 @@ function AppContent() {
       inviteMessage = `\n\nLink de convite para os amigos entrarem:\n${inviteUrl}`;
     }
     
-    alert(`✓ Inscrição de ${regTeamName} cadastrada e enviada para aprovação! Código da equipe: ${generatedCode}${inviteMessage}`);
+    alertUser(`✓ Inscrição de ${regTeamName} cadastrada e enviada para aprovação! Código da equipe: ${generatedCode}${inviteMessage}`, 'success-modal');
     
     // Clear forms
     setRegGame('');
@@ -406,18 +407,18 @@ function AppContent() {
   const handleJoinTeamSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!joinStudentName || !joinTeamCode) {
-      alert('Por favor preencha todos os campos!');
+      alertUser('Por favor preencha todos os campos!', 'error');
       return;
     }
     
     const success = await joinTeamByCode(joinStudentName, joinTeamCode);
     if (success) {
-      alert(`✓ ${joinStudentName} foi adicionado à equipe com sucesso!`);
+      alertUser(`✓ ${joinStudentName} foi adicionado à equipe com sucesso!`, 'success');
       setJoinStudentName('');
       setJoinTeamCode('');
       setCurrentPage('inicio');
     } else {
-      alert('✘ Código de equipe inválido ou não encontrado. Tente novamente!');
+      alertUser('✘ Código de equipe inválido ou não encontrado. Tente novamente!', 'error');
     }
   };
 
