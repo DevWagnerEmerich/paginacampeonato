@@ -673,24 +673,6 @@ function AppContent() {
                         </div>
                       ))}
                     </div>
-
-                    {/* QR Code de Inscrição */}
-                    <div className="pt-4 border-t border-white/5 flex items-center gap-3">
-                      <div className="p-1.5 bg-white rounded-lg">
-                        <img 
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(window.location.origin + '?page=cadastro')}`} 
-                          alt="QR Code" 
-                          referrerPolicy="no-referrer"
-                          className="w-16 h-16"
-                        />
-                      </div>
-                      <div className="text-left">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                          <QrCode className="w-3.5 h-3.5 text-indigo-400" /> QR de Inscrição
-                        </span>
-                        <p className="text-[11px] text-slate-400 mt-1 leading-snug">Aponte a câmera e cadastre sua equipe via smartphone nos corredores!</p>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
