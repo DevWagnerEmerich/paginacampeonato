@@ -29,9 +29,8 @@ function AppContent() {
     joinTeamByCode, updateMatch, generateGroupsAndMatches,
     alertUser, confirmUser
   } = useTournament();
-  const isRegistrationClosed = settings.registrationDeadline 
-    ? new Date() > new Date(settings.registrationDeadline) 
-    : false;
+  const isRegistrationClosed = (settings.registrationDeadline && new Date() > new Date(settings.registrationDeadline)) || 
+                               (settings.countdownDate && new Date() > new Date(settings.countdownDate));
   const isTournamentStarted = settings.countdownDate 
     ? new Date() > new Date(settings.countdownDate) 
     : false;
@@ -1368,9 +1367,8 @@ function AppContent() {
         {currentPage === 'cadastro' && (
           <div className="max-w-3xl mx-auto space-y-6">
             {(() => {
-              const isDeadlinePassed = settings.registrationDeadline 
-                ? new Date() > new Date(settings.registrationDeadline) 
-                : false;
+              const isDeadlinePassed = (settings.registrationDeadline && new Date() > new Date(settings.registrationDeadline)) ||
+                                       (settings.countdownDate && new Date() > new Date(settings.countdownDate));
 
               if (isDeadlinePassed) {
                 return (
@@ -1380,8 +1378,8 @@ function AppContent() {
                     </div>
                     <h2 className="font-display font-black text-xl lg:text-2xl text-white tracking-wider uppercase">Inscrições Encerradas!</h2>
                     <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed font-sans">
-                      O prazo limite para inscrição de equipes e entrada de participantes (dia {settings.registrationDeadline ? new Date(settings.registrationDeadline).toLocaleString('pt-BR') : ''}) já expirou. 
-                      Os confrontos estão sendo gerados e as chaves estão sendo preparadas pelos organizadores.
+                      O prazo limite para inscrição de equipes expirou ou o campeonato já foi iniciado. 
+                      Os confrontos e as chaves estão sendo gerenciados e preparados pelos organizadores.
                     </p>
                     <button 
                       onClick={() => setCurrentPage('inicio')} 
