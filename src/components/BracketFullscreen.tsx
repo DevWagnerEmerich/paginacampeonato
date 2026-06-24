@@ -88,8 +88,12 @@ export const BracketFullscreen: React.FC<BracketFullscreenProps> = ({ onClose })
       {/* FULLSCREEN HEADER */}
       <div className="flex flex-col md:flex-row items-center justify-between border-b border-white/10 pb-4 mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-sans text-xl font-extrabold shadow-lg shadow-indigo-600/25">
-            {settings.logo}
+          <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-sans text-xl font-extrabold shadow-lg shadow-indigo-600/25 overflow-hidden shrink-0">
+            {settings.logo && (settings.logo.startsWith('/') || settings.logo.includes('.') || settings.logo.startsWith('data:') || settings.logo.startsWith('http')) ? (
+              <img src={settings.logo} alt="Logo" className="w-full h-full object-contain p-1.5" />
+            ) : (
+              settings.logo
+            )}
           </div>
           <div>
             <h1 className="font-display font-black text-xl lg:text-3xl text-white uppercase tracking-widest flex items-center gap-2">

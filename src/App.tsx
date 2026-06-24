@@ -470,8 +470,12 @@ function AppContent() {
       {/* HEADER NAVBAR */}
       <nav className="bg-[#0E1016]/90 backdrop-blur-md border-b border-white/5 sticky top-0 z-40 px-4 py-3 lg:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage('inicio')}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-display font-extrabold text-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            {settings.logo}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-display font-extrabold text-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 overflow-hidden shrink-0">
+            {settings.logo && (settings.logo.startsWith('/') || settings.logo.includes('.') || settings.logo.startsWith('data:') || settings.logo.startsWith('http')) ? (
+              <img src={settings.logo} alt="Logo" className="w-full h-full object-contain p-1" />
+            ) : (
+              settings.logo
+            )}
           </div>
           <div>
             <div className="font-display font-black text-lg lg:text-xl text-white tracking-widest uppercase">
@@ -583,6 +587,11 @@ function AppContent() {
             <div className="relative overflow-hidden rounded-3xl bg-[#0E1016] border border-white/10 p-6 lg:p-12">
               <div className="absolute inset-0 bg-gradient-to-r from-[#0A0B0F] via-[#0E1016]/60 to-indigo-950/10 z-0"></div>
               <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl z-0"></div>
+              
+              {/* Background Logo da E-Sports Cup */}
+              <div className="absolute right-0 bottom-0 top-0 w-full lg:w-1/2 opacity-[0.06] pointer-events-none z-0 flex items-center justify-center overflow-hidden select-none">
+                <img src="/logo-hero.png" alt="Logo de Fundo" className="w-full max-w-[450px] object-contain transform translate-x-12 translate-y-12 lg:translate-x-20 rotate-12 scale-110" />
+              </div>
               
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                 <div className="lg:col-span-2 space-y-6">

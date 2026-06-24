@@ -61,11 +61,11 @@ const TournamentContext = createContext<TournamentContextType | undefined>(undef
 // Initial/Fallback Data in case Firestore is empty or fails
 const initialSettings: AppSettings = {
   id: 'global',
-  logo: '🏆',
-  schoolName: 'Nome da Escola',
-  eventTitle: 'Copa de E-sports',
+  logo: '/logo-hero.png',
+  schoolName: 'Dom Cavati',
+  eventTitle: 'E-Sports Cup',
   edition: '1ª Edição',
-  description: 'Seja bem-vindo ao portal oficial do campeonato de e-sports escolar! Cadastre seus jogos, crie suas equipes e participe dos confrontos.',
+  description: 'Seja bem-vindo ao portal oficial da Dom Cavati E-Sports Cup! Cadastre seus jogos, crie suas equipes e participe dos confrontos.',
   countdownDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days from now
   liveStreamUrl: '',
   registrationDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
