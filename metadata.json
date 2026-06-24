@@ -1,0 +1,6 @@
+{
+  "name": "Esports School League",
+  "description": "Plataforma elegante de gerenciamento, sorteio de grupos e placar em tempo real para torneios escolares de e-sports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

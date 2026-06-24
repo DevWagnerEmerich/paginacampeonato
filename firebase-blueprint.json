@@ -1,0 +1,175 @@
+{
+  "entities": {
+    "AppSettings": {
+      "title": "AppSettings",
+      "description": "Global tournament settings and countdown clock",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "logo": { "type": "string" },
+        "schoolName": { "type": "string" },
+        "eventTitle": { "type": "string" },
+        "edition": { "type": "string" },
+        "description": { "type": "string" },
+        "countdownDate": { "type": "string", "format": "date-time" },
+        "liveStreamUrl": { "type": "string" }
+      },
+      "required": ["id", "logo", "schoolName", "eventTitle", "edition", "description", "countdownDate", "liveStreamUrl"]
+    },
+    "GameConfig": {
+      "title": "GameConfig",
+      "description": "Configuration details for an esports title",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "emoji": { "type": "string" },
+        "format": { "type": "string" },
+        "bracketStyle": { "type": "string" },
+        "isConfirmed": { "type": "boolean" },
+        "minTeams": { "type": "number" }
+      },
+      "required": ["id", "name", "emoji", "format", "bracketStyle", "isConfirmed", "minTeams"]
+    },
+    "Team": {
+      "title": "Team",
+      "description": "Esports club or player registration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "flag": { "type": "string" },
+        "gameId": { "type": "string" },
+        "gameName": { "type": "string" },
+        "type": { "type": "string" },
+        "members": { "type": "array" },
+        "contact": { "type": "string" },
+        "status": { "type": "string" },
+        "wins": { "type": "number" },
+        "losses": { "type": "number" },
+        "draws": { "type": "number" },
+        "points": { "type": "number" },
+        "mvps": { "type": "number" }
+      },
+      "required": ["id", "name", "flag", "gameId", "gameName", "type", "members", "contact", "status", "wins", "losses", "draws", "points", "mvps"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "Tournament duel",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "gameId": { "type": "string" },
+        "gameName": { "type": "string" },
+        "gameEmoji": { "type": "string" },
+        "team1Id": { "type": "string" },
+        "team1Name": { "type": "string" },
+        "team1Flag": { "type": "string" },
+        "team2Id": { "type": "string" },
+        "team2Name": { "type": "string" },
+        "team2Flag": { "type": "string" },
+        "score1": { "type": "number" },
+        "score2": { "type": "number" },
+        "phase": { "type": "string" },
+        "groupName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "isLive": { "type": "boolean" },
+        "winnerId": { "type": "string" },
+        "mvp": { "type": "string" },
+        "topScorer": { "type": "string" }
+      },
+      "required": ["id", "gameId", "gameName", "gameEmoji", "team1Id", "team1Name", "team1Flag", "team2Id", "team2Name", "team2Flag", "phase", "date", "time"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "A customized pool of teams",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "gameId": { "type": "string" },
+        "name": { "type": "string" },
+        "teamIds": { "type": "array" }
+      },
+      "required": ["id", "gameId", "name", "teamIds"]
+    },
+    "GameSuggestion": {
+      "title": "GameSuggestion",
+      "description": "A game suggested by students for the cup",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentName": { "type": "string" },
+        "gameName": { "type": "string" },
+        "formatSuggested": { "type": "string" },
+        "votesCount": { "type": "number" },
+        "votedBy": { "type": "array" }
+      },
+      "required": ["id", "studentName", "gameName", "formatSuggested", "votesCount", "votedBy"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "Real-time bulletin announcement or event update",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "type": { "type": "string" },
+        "gameId": { "type": "string" }
+      },
+      "required": ["id", "message", "timestamp", "type"]
+    },
+    "ChampionHistory": {
+      "title": "ChampionHistory",
+      "description": "Previous champions database record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "gameName": { "type": "string" },
+        "emoji": { "type": "string" },
+        "edition": { "type": "string" },
+        "year": { "type": "string" },
+        "championName": { "type": "string" },
+        "championFlag": { "type": "string" },
+        "runnerUpName": { "type": "string" },
+        "runnerUpFlag": { "type": "string" }
+      },
+      "required": ["id", "gameName", "emoji", "edition", "year", "championName", "championFlag", "runnerUpName", "runnerUpFlag"]
+    }
+  },
+  "firestore": {
+    "settings/{settingsId}": {
+      "schema": { "$ref": "#/entities/AppSettings" },
+      "description": "Custom theme setting, school metadata, countdown"
+    },
+    "games/{gameId}": {
+      "schema": { "$ref": "#/entities/GameConfig" },
+      "description": "Playable school tournament titles"
+    },
+    "teams/{teamId}": {
+      "schema": { "$ref": "#/entities/Team" },
+      "description": "Registered and proposed participant rosters"
+    },
+    "matches/{matchId}": {
+      "schema": { "$ref": "#/entities/Match" },
+      "description": "Active, live, scheduled or archived duels"
+    },
+    "groups/{groupId}": {
+      "schema": { "$ref": "#/entities/Group" },
+      "description": "Tournament stages subdivisions and pools lookup"
+    },
+    "suggestions/{suggestionId}": {
+      "schema": { "$ref": "#/entities/GameSuggestion" },
+      "description": "Suggestions box populated with community-voted ideas"
+    },
+    "notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "Real-time system-wide action ticker and scoreboard notifications"
+    },
+    "history/{historyId}": {
+      "schema": { "$ref": "#/entities/ChampionHistory" },
+      "description": "Hall of fame historic legacy database entries"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    match /settings/{settingsId} {
+      allow read, write: if true;
+    }
+
+    match /games/{gameId} {
+      allow read, write: if true;
+    }
+
+    match /teams/{teamId} {
+      allow read, write: if true;
+    }
+
+    match /matches/{matchId} {
+      allow read, write: if true;
+    }
+
+    match /groups/{groupId} {
+      allow read, write: if true;
+    }
+
+    match /suggestions/{suggestionId} {
+      allow read, write: if true;
+    }
+
+    match /notifications/{notificationId} {
+      allow read, write: if true;
+    }
+
+    match /history/{historyId} {
+      allow read, write: if true;
+    }
+  }
+}
