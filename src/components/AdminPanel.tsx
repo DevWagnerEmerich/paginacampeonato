@@ -816,11 +816,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
                 <button
                   onClick={async () => {
                     if (selectedMatchIds.length === 0) {
-                      alert('Selecione ao menos uma partida para agendar em lote!');
+                      alertUser('Selecione ao menos uma partida para agendar em lote!', 'error');
                       return;
                     }
                     if (!bulkDate) {
-                      alert('Selecione uma data válida para aplicar às partidas!');
+                      alertUser('Selecione uma data válida para aplicar às partidas!', 'error');
                       return;
                     }
                     let count = 0;
@@ -831,7 +831,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
                       count++;
                     }
                     setSelectedMatchIds([]);
-                    alert(`✓ ${count} partidas agendadas com sucesso para ${bulkDate.split('-').reverse().join('/')}!`);
+                    alertUser(`✓ ${count} partidas agendadas com sucesso para ${bulkDate.split('-').reverse().join('/')}!`, 'success');
                   }}
                   disabled={selectedMatchIds.length === 0 || !bulkDate}
                   className={`bg-indigo-650 hover:bg-indigo-600 disabled:bg-indigo-950/20 disabled:text-slate-500 bg-indigo-600 text-white font-extrabold uppercase px-4 py-2.5 rounded-xl tracking-wider text-[10px] cursor-pointer transition-all flex items-center gap-1.5 ${
@@ -844,17 +844,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
                 <button
                   onClick={async () => {
                     if (selectedMatchIds.length === 0) {
-                      alert('Selecione ao menos uma partida para limpar agendamentos!');
+                      alertUser('Selecione ao menos uma partida para limpar agendamentos!', 'error');
                       return;
                     }
-                    if (confirm(`Deseja limpar a data e hora das ${selectedMatchIds.length} partidas selecionadas?`)) {
+                    if (await confirmUser(`Deseja limpar a data e hora das ${selectedMatchIds.length} partidas selecionadas?`)) {
                       let count = 0;
                       for (const id of selectedMatchIds) {
                         await updateMatch(id, { date: '', time: '' });
                         count++;
                       }
                       setSelectedMatchIds([]);
-                      alert(`✓ Agendamento de ${count} partidas removido.`);
+                      alertUser(`✓ Agendamento de ${count} partidas removido.`, 'success');
                     }
                   }}
                   disabled={selectedMatchIds.length === 0}
@@ -1011,7 +1011,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onSuccess }) => {
                                 const nextLocalDateTimes = { ...localDateTimes };
                                 delete nextLocalDateTimes[m.id];
                                 setLocalDateTimes(nextLocalDateTimes);
-                                alert('✓ Confronto agendado com sucesso!');
+                                alertUser('✓ Confronto agendado com sucesso!', 'success');
                               }}
                               disabled={!isModified}
                               className={`p-1.5 rounded-lg border transition-all cursor-pointer ${

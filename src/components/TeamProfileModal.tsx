@@ -17,7 +17,7 @@ interface TeamProfileModalProps {
 }
 
 export const TeamProfileModal: React.FC<TeamProfileModalProps> = ({ teamId, onClose }) => {
-  const { teams, matches, games } = useTournament();
+  const { teams, matches, games, alertUser } = useTournament();
   
   const team = teams.find(t => t.id === teamId);
   if (!team) return null;
@@ -25,7 +25,7 @@ export const TeamProfileModal: React.FC<TeamProfileModalProps> = ({ teamId, onCl
   const handleCopyInviteLink = () => {
     const link = `${window.location.origin}/?invite=${team.teamCode}`;
     navigator.clipboard.writeText(link);
-    alert(`✓ Link de convite copiado para o WhatsApp/e-mail dos amigos!\n${link}`);
+    alertUser(`✓ Link de convite copiado para o WhatsApp/e-mail dos amigos!\n${link}`, 'success');
   };
 
   const game = games.find(g => g.id === team.gameId);

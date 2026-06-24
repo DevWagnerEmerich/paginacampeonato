@@ -1532,7 +1532,7 @@ function AppContent() {
                                     const base64 = await processUploadedImage(file);
                                     setRegFlag(base64);
                                   } catch (err) {
-                                    alert("Falha ao processar a imagem. Tente outro arquivo.");
+                                    alertUser("Falha ao processar a imagem. Tente outro arquivo.", 'error');
                                     console.error(err);
                                   }
                                 }
