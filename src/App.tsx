@@ -28,7 +28,8 @@ function AppContent() {
     addTeam, addNotification,
     joinTeamByCode, updateMatch, generateGroupsAndMatches
   } = useTournament();
-
+  const isRegistrationClosed = true; // Inscrições encerradas de forma definitiva
+  
   // Navigation pages
   const [currentPage, setCurrentPage] = useState<'inicio' | 'chaveamento' | 'calendario' | 'cadastro' | 'admin'>('inicio');
   
@@ -494,7 +495,8 @@ function AppContent() {
             { page: 'chaveamento', label: 'Chaveamento', icon: Swords },
             { page: 'calendario', label: 'Calendário', icon: CalIcon },
             { page: 'cadastro', label: 'Cadastrar', icon: PlusCircle },
-          ].map(item => {
+          ].filter(item => item.page !== 'cadastro' || !isRegistrationClosed)
+           .map(item => {
             const Icon = item.icon;
             return (
               <button
@@ -550,7 +552,8 @@ function AppContent() {
           { page: 'inicio', label: 'Home', icon: Tv },
           { page: 'chaveamento', label: 'Chaves', icon: Swords },
           { page: 'cadastro', label: 'Inscrição', icon: PlusCircle },
-        ].map(item => {
+        ].filter(item => item.page !== 'cadastro' || !isRegistrationClosed)
+         .map(item => {
           const Icon = item.icon;
           return (
             <button
@@ -593,90 +596,56 @@ function AppContent() {
                 <img src="/logo-hero.png" alt="Logo de Fundo" className="w-full max-w-[420px] object-contain transform -rotate-6 scale-105" />
               </div>
               
-              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-                <div className="lg:col-span-2 space-y-6">
-                  <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-[#8F9FFF]">
-                    <Sparkles className="w-3.5 h-3.5 animate-pulse" /> {settings.edition}
+              <div className="relative z-10 max-w-3xl space-y-6">
+                <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-[#8F9FFF]">
+                  <Sparkles className="w-3.5 h-3.5 animate-pulse" /> {settings.edition}
+                </div>
+                
+                <h1 className="font-display font-black text-4xl lg:text-6xl text-white tracking-widest uppercase leading-none">
+                  {settings.schoolName} <br />
+                  <span className="text-indigo-400">{settings.eventTitle}</span>
+                </h1>
+
+                <p className="text-sm lg:text-base text-slate-400 leading-relaxed max-w-xl">
+                  {settings.description}
+                </p>
+
+                <div className="flex flex-wrap gap-6 text-slate-300 font-display">
+                  <div className="space-y-0.5">
+                    <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{teams.filter(t => t.status === 'approved').length}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Times Confirmados</span>
                   </div>
-                  
-                  <h1 className="font-display font-black text-4xl lg:text-6xl text-white tracking-widest uppercase leading-none">
-                    {settings.schoolName} <br />
-                    <span className="text-indigo-400">{settings.eventTitle}</span>
-                  </h1>
-
-                  <p className="text-sm lg:text-base text-slate-400 leading-relaxed max-w-xl">
-                    {settings.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-6 text-slate-300 font-display">
-                    <div className="space-y-0.5">
-                      <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{teams.filter(t => t.status === 'approved').length}</span>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Times Confirmados</span>
-                    </div>
-                    <div className="w-px h-10 bg-white/5 hidden md:block"></div>
-                    <div className="space-y-0.5">
-                      <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{games.filter(g => g.isConfirmed).length}</span>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Jogos Oficiais</span>
-                    </div>
-                    <div className="w-px h-10 bg-white/5 hidden md:block"></div>
-                    <div className="space-y-0.5">
-                      <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{matches.length}</span>
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Partidas Totais</span>
-                    </div>
+                  <div className="w-px h-10 bg-white/5 hidden md:block"></div>
+                  <div className="space-y-0.5">
+                    <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{games.filter(g => g.isConfirmed).length}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Jogos Oficiais</span>
                   </div>
+                  <div className="w-px h-10 bg-white/5 hidden md:block"></div>
+                  <div className="space-y-0.5">
+                    <span className="text-2xl lg:text-3xl font-extrabold text-white block font-mono">{matches.length}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Partidas Totais</span>
+                  </div>
+                </div>
 
-                  <div className="flex flex-wrap gap-4 pt-2">
-                    <button 
-                      onClick={() => setCurrentPage('chaveamento')}
-                      className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-600/15"
-                    >
-                      Acessar Chaveamento
-                    </button>
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <button 
+                    onClick={() => setCurrentPage('chaveamento')}
+                    className="bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-600/15"
+                  >
+                    Acessar Chaveamento
+                  </button>
+                  {!isRegistrationClosed ? (
                     <button 
                       onClick={() => setCurrentPage('cadastro')}
                       className="bg-[#15171F] hover:bg-[#1C1E26] border border-white/10 text-white font-extrabold uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl transition-all cursor-pointer"
                     >
                       Inscrever Equipe
                     </button>
-                  </div>
-                </div>
-
-                {/* COUNTDOWN CLOCK */}
-                <div className="bg-[#0A0B0F]/80 backdrop-blur border border-white/10 rounded-2xl p-6 text-center space-y-4 shadow-xl">
-                  <span className="text-[10px] uppercase tracking-widest font-extrabold text-slate-400">⏱ REGRESSIVA OFICIAL</span>
-                  
-                  <div className="grid grid-cols-4 gap-2">
-                    {[
-                      { num: countdown.days, label: 'Dias' },
-                      { num: countdown.hours, label: 'Horas' },
-                      { num: countdown.mins, label: 'Min' },
-                      { num: countdown.secs, label: 'Seg' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="bg-[#15171F] border border-white/5 rounded-xl py-3.5">
-                        <span className="text-2xl lg:text-3xl font-bold font-mono text-indigo-400 block tracking-tight">{item.num}</span>
-                        <span className="text-[9px] uppercase font-bold tracking-wider text-slate-500 mt-0.5 block">{item.label}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* QR Code de Inscrição */}
-                  <div className="pt-4 border-t border-white/5 flex items-center gap-3">
-                    <div className="p-1.5 bg-white rounded-lg">
-                      {/* Generates a gorgeous dynamic QR representation pointing to register page */}
-                      <img 
-                        src={`https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${encodeURIComponent(window.location.origin + '?page=cadastro')}`} 
-                        alt="QR Code" 
-                        referrerPolicy="no-referrer"
-                        className="w-16 h-16"
-                      />
-                    </div>
-                    <div className="text-left">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                        <QrCode className="w-3.5 h-3.5 text-indigo-400" /> QR de Inscrição
-                      </span>
-                      <p className="text-[11px] text-slate-400 mt-1 leading-snug">Aponte a câmera e cadastre sua equipe via smartphone nos corredores!</p>
-                    </div>
-                  </div>
+                  ) : (
+                    <span className="bg-rose-500/10 border border-rose-500/20 text-rose-450 text-rose-400 font-extrabold uppercase tracking-wider text-xs px-6 py-3.5 rounded-xl flex items-center gap-1.5 select-none font-sans">
+                      🚫 Inscrições Encerradas
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
