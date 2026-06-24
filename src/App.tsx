@@ -589,8 +589,8 @@ function AppContent() {
               <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl z-0"></div>
               
               {/* Background Logo da E-Sports Cup */}
-              <div className="absolute right-0 bottom-0 top-0 w-full lg:w-1/2 opacity-[0.06] pointer-events-none z-0 flex items-center justify-center overflow-hidden select-none">
-                <img src="/logo-hero.png" alt="Logo de Fundo" className="w-full max-w-[450px] object-contain transform translate-x-12 translate-y-12 lg:translate-x-20 rotate-12 scale-110" />
+              <div className="absolute left-0 bottom-0 top-0 w-full lg:w-2/3 opacity-[0.08] pointer-events-none z-0 flex items-center justify-center lg:justify-start overflow-hidden select-none pl-4 lg:pl-16">
+                <img src="/logo-hero.png" alt="Logo de Fundo" className="w-full max-w-[420px] object-contain transform -rotate-6 scale-105" />
               </div>
               
               <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
